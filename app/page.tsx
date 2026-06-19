@@ -8,7 +8,7 @@ function PageHeader() {
         raise ur voice
       </h1>
       <p className="mt-2 text-zinc-500">
-        Active global conflicts and human rights crises — read, discuss, and act.
+        Learn about active global conflicts and human rights crises. Read, discuss, and act.
       </p>
     </div>
   );
