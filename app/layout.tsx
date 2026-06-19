@@ -5,7 +5,7 @@ import "./globals.css";
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
 
 export const metadata: Metadata = {
-  title: "Educate Yourself",
+  title: "raise ur voice",
   description:
     "Stay informed on global conflicts and human rights crises. Read, discuss, and act.",
 };
