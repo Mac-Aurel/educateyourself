@@ -75,7 +75,12 @@ export async function syncOneConflict(conflict: Conflict): Promise<SyncResult> {
       fetchDisplaced(conflict.countryCode),
     ]);
 
-    await writeConflictUpdate(conflict.id, { summary, fatalities, displaced, sources });
+    await writeConflictUpdate(conflict.id, {
+      summary: summary || conflict.summary,
+      fatalities: fatalities ?? conflict.fatalities,
+      displaced: displaced ?? conflict.displaced,
+      sources: sources.length > 0 ? sources : conflict.sources,
+    });
 
     return { conflictId: conflict.id, title: conflict.title, success: true };
   } catch (err) {

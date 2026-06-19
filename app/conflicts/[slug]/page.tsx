@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { getConflictBySlug } from "@/lib/supabase/queries/conflicts";
 import { getDiscussionsByConflict } from "@/lib/supabase/queries/discussions";
 import { DiscussionThread } from "@/components/discussion/DiscussionThread";
@@ -25,6 +26,22 @@ function BackLink() {
   );
 }
 
+function ConflictImage({ imageUrl, title }: { imageUrl: string | null; title: string }) {
+  if (!imageUrl) return null;
+  return (
+    <div className="relative mb-6 h-64 w-full overflow-hidden rounded-xl sm:h-80">
+      <Image
+        src={imageUrl}
+        alt={title}
+        fill
+        className="object-cover"
+        sizes="(max-width: 768px) 100vw, 768px"
+        priority
+      />
+    </div>
+  );
+}
+
 function ConflictHeader({ conflict }: { conflict: Conflict }) {
   return (
     <div className="flex flex-wrap items-start justify-between gap-4">
@@ -32,7 +49,12 @@ function ConflictHeader({ conflict }: { conflict: Conflict }) {
         <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
           {conflict.title}
         </h1>
-        <p className="mt-1 text-zinc-500">{conflict.country}</p>
+        <p className="mt-1 text-zinc-500">
+          {conflict.country} · {conflict.region}
+        </p>
+        {conflict.startedAt && (
+          <p className="mt-1 text-sm text-zinc-400">Since {conflict.startedAt}</p>
+        )}
       </div>
       <Badge status={conflict.status} />
     </div>
@@ -41,9 +63,11 @@ function ConflictHeader({ conflict }: { conflict: Conflict }) {
 
 function ConflictStats({ conflict }: { conflict: Conflict }) {
   return (
-    <div className="mt-6 flex flex-wrap gap-8 rounded-xl border border-zinc-100 bg-zinc-50 p-5 dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="mt-6 grid grid-cols-2 gap-4 rounded-xl border border-zinc-100 bg-zinc-50 p-5 sm:grid-cols-4 dark:border-zinc-800 dark:bg-zinc-900">
       <StatItem label="Fatalities" value={formatNumber(conflict.fatalities)} />
       <StatItem label="Displaced" value={formatNumber(conflict.displaced)} />
+      <StatItem label="Refugees" value={formatNumber(conflict.refugees)} />
+      <StatItem label="Children affected" value={formatNumber(conflict.childrenAffected)} />
       {conflict.lastSyncedAt && (
         <StatItem label="Last updated" value={formatDate(conflict.lastSyncedAt)} />
       )}
@@ -54,7 +78,34 @@ function ConflictStats({ conflict }: { conflict: Conflict }) {
 function ConflictSummary({ summary }: { summary: string }) {
   if (!summary) return null;
   return (
-    <p className="mt-6 leading-relaxed text-zinc-700 dark:text-zinc-300">{summary}</p>
+    <div className="mt-6">
+      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">
+        Overview
+      </h2>
+      <p className="leading-relaxed text-zinc-700 dark:text-zinc-300">{summary}</p>
+    </div>
+  );
+}
+
+function ConflictKeyFacts({ facts }: { facts: string[] }) {
+  if (facts.length === 0) return null;
+  return (
+    <div className="mt-8">
+      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">
+        Key facts
+      </h2>
+      <ul className="grid gap-2 sm:grid-cols-2">
+        {facts.map((fact) => (
+          <li
+            key={fact}
+            className="flex items-start gap-2 rounded-lg border border-zinc-100 bg-zinc-50 px-4 py-3 text-sm text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300"
+          >
+            <span className="mt-0.5 shrink-0 text-red-500">●</span>
+            {fact}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -110,9 +161,11 @@ export default async function ConflictPage({ params }: PageProps) {
   return (
     <main className="mx-auto max-w-3xl px-4 py-16">
       <BackLink />
+      <ConflictImage imageUrl={conflict.imageUrl} title={conflict.title} />
       <ConflictHeader conflict={conflict} />
       <ConflictStats conflict={conflict} />
       <ConflictSummary summary={conflict.summary} />
+      <ConflictKeyFacts facts={conflict.keyFacts} />
       <ConflictSources conflict={conflict} />
       <ConflictActions conflict={conflict} />
       <DiscussionThread conflictId={conflict.id} initialMessages={messages} />

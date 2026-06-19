@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { postMessage } from "@/lib/supabase/queries/discussions";
-import type { DiscussionMessage, NewMessage } from "@/types/discussion";
+import type { DiscussionMessage } from "@/types/discussion";
 
 type CommentFormProps = {
   conflictId: string;
@@ -31,15 +30,24 @@ export function CommentForm({ conflictId, parentId = null, prefilledName, onMess
     setSubmitting(true);
     setError(null);
 
-    const newMessage: NewMessage = {
-      conflictId,
-      parentId: parentId ?? null,
-      authorName,
-      content,
-    };
-
     try {
-      const posted = await postMessage(newMessage);
+      const response = await fetch("/api/discussions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          conflictId,
+          parentId: parentId ?? null,
+          authorName,
+          content,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error ?? "Failed to post message");
+      }
+
+      const posted: DiscussionMessage = await response.json();
       onMessagePosted(posted);
       setContent("");
     } catch {

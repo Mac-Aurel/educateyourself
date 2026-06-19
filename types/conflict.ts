@@ -17,10 +17,16 @@ export type ConflictRow = {
   title: string;
   country: string;
   country_code: string;
+  region: string;
   status: ConflictStatus;
+  started_at: string;
   summary: string;
+  key_facts: string[];
   fatalities: number | null;
   displaced: number | null;
+  refugees: number | null;
+  children_affected: number | null;
+  image_url: string | null;
   sources: ConflictSource[];
   actions: ConflictAction[];
   last_synced_at: string | null;
@@ -34,10 +40,16 @@ export type Conflict = {
   title: string;
   country: string;
   countryCode: string;
+  region: string;
   status: ConflictStatus;
+  startedAt: string;
   summary: string;
+  keyFacts: string[];
   fatalities: number | null;
   displaced: number | null;
+  refugees: number | null;
+  childrenAffected: number | null;
+  imageUrl: string | null;
   sources: ConflictSource[];
   actions: ConflictAction[];
   lastSyncedAt: string | null;
@@ -51,9 +63,12 @@ export type ConflictSummary = Pick<
   | "title"
   | "country"
   | "countryCode"
+  | "region"
   | "status"
+  | "startedAt"
   | "summary"
   | "fatalities"
   | "displaced"
+  | "imageUrl"
   | "lastSyncedAt"
 >;

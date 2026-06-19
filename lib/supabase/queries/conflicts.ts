@@ -8,7 +8,7 @@ export async function getAllConflicts(): Promise<ConflictSummary[]> {
 
   const { data, error } = await supabase
     .from("conflicts")
-    .select("id, slug, title, country, status, summary, fatalities, displaced, last_synced_at")
+    .select("id, slug, title, country, country_code, region, status, started_at, summary, fatalities, displaced, image_url, last_synced_at")
     .order("status", { ascending: true })
     .order("title", { ascending: true });
 
