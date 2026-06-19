@@ -7,6 +7,7 @@ import type { DiscussionMessage, NewMessage } from "@/types/discussion";
 type CommentFormProps = {
   conflictId: string;
   parentId?: string | null;
+  prefilledName?: string;
   onMessagePosted: (message: DiscussionMessage) => void;
 };
 
@@ -17,8 +18,8 @@ function isFormValid(authorName: string, content: string): boolean {
   return authorName.trim().length > 0 && content.trim().length > 0;
 }
 
-export function CommentForm({ conflictId, parentId = null, onMessagePosted }: CommentFormProps) {
-  const [authorName, setAuthorName] = useState("");
+export function CommentForm({ conflictId, parentId = null, prefilledName, onMessagePosted }: CommentFormProps) {
+  const [authorName, setAuthorName] = useState(prefilledName ?? "");
   const [content, setContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,8 +56,9 @@ export function CommentForm({ conflictId, parentId = null, onMessagePosted }: Co
         placeholder="Your name (anonymous is fine)"
         value={authorName}
         maxLength={AUTHOR_MAX_LENGTH}
+        readOnly={!!prefilledName}
         onChange={(e) => setAuthorName(e.target.value)}
-        className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900"
+        className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:border-zinc-400 disabled:cursor-not-allowed dark:border-zinc-700 dark:bg-zinc-900 read-only:opacity-60"
       />
       <textarea
         placeholder="Share your thoughts..."

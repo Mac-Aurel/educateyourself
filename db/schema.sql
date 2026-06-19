@@ -37,15 +37,31 @@ create index conflicts_status_idx on conflicts (status);
 
 
 -- -------------------------------------------------------
+-- Table: app_users
+-- Username-only accounts. No email, no OAuth.
+-- -------------------------------------------------------
+
+create table app_users (
+  id            uuid primary key default gen_random_uuid(),
+  username      text not null unique,
+  password_hash text not null,
+  created_at    timestamptz not null default now()
+);
+
+create index app_users_username_idx on app_users (username);
+
+
+-- -------------------------------------------------------
 -- Table: discussions
--- Anonymous comments attached to a conflict.
--- parent_id is null for top-level messages, set for replies.
+-- Comments attached to a conflict.
+-- Anonymous if user_id is null, linked to account otherwise.
 -- -------------------------------------------------------
 
 create table discussions (
   id          uuid primary key default gen_random_uuid(),
   conflict_id uuid not null references conflicts (id) on delete cascade,
   parent_id   uuid references discussions (id) on delete cascade,
+  user_id     uuid references app_users (id) on delete set null,
   author_name text not null,
   content     text not null,
   created_at  timestamptz not null default now()
@@ -59,8 +75,9 @@ create index discussions_parent_id_idx on discussions (parent_id);
 -- Row Level Security
 -- -------------------------------------------------------
 
-alter table conflicts  enable row level security;
-alter table discussions enable row level security;
+alter table conflicts   enable row level security;
+alter table discussions  enable row level security;
+alter table app_users    enable row level security;
 
 -- Anyone can read conflicts
 create policy "conflicts: public read"
@@ -81,3 +98,8 @@ create policy "discussions: public read"
 create policy "discussions: public insert"
   on discussions for insert
   with check (true);
+
+-- app_users: only the service role manages accounts (our API routes handle this)
+create policy "app_users: service role only"
+  on app_users for all
+  using (auth.role() = 'service_role');

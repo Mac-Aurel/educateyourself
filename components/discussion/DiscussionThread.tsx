@@ -4,8 +4,12 @@ import { useEffect, useState } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { DiscussionBubble } from "@/components/discussion/DiscussionBubble";
 import { CommentForm } from "@/components/discussion/CommentForm";
+import { AuthForm } from "@/components/auth/AuthForm";
+import { UserMenu } from "@/components/auth/UserMenu";
 import { mapDiscussionRow } from "@/lib/utils/mappers";
 import type { DiscussionMessage, DiscussionRow } from "@/types/discussion";
+
+type SessionUser = { id: string; username: string };
 
 type DiscussionThreadProps = {
   conflictId: string;
@@ -45,16 +49,31 @@ function useRealtimeMessages(conflictId: string, initial: DiscussionMessage[]) {
       )
       .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => { supabase.removeChannel(channel); };
   }, [conflictId]);
 
-  return { messages, addMessage: (m: DiscussionMessage) => setMessages((prev) => [...prev, m]) };
+  return {
+    messages,
+    addMessage: (m: DiscussionMessage) => setMessages((prev) => [...prev, m]),
+  };
+}
+
+function useCurrentUser() {
+  const [user, setUser] = useState<SessionUser | null>(null);
+  const [checked, setChecked] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((r) => r.json())
+      .then((data) => { setUser(data.user); setChecked(true); });
+  }, []);
+
+  return { user, checked, setUser };
 }
 
 export function DiscussionThread({ conflictId, initialMessages }: DiscussionThreadProps) {
   const { messages, addMessage } = useRealtimeMessages(conflictId, initialMessages);
+  const { user, checked, setUser } = useCurrentUser();
   const threads = groupReplies(messages);
 
   return (
@@ -79,10 +98,21 @@ export function DiscussionThread({ conflictId, initialMessages }: DiscussionThre
       </div>
 
       <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900">
-        <p className="mb-3 text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          Join the discussion
-        </p>
-        <CommentForm conflictId={conflictId} onMessagePosted={addMessage} />
+        {checked && (
+          <div className="mb-4">
+            {user ? (
+              <UserMenu username={user.username} onLogout={() => setUser(null)} />
+            ) : (
+              <AuthForm onSuccess={(u) => setUser(u)} />
+            )}
+          </div>
+        )}
+
+        <CommentForm
+          conflictId={conflictId}
+          prefilledName={user?.username}
+          onMessagePosted={addMessage}
+        />
       </div>
     </section>
   );
