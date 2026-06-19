@@ -16,6 +16,7 @@ export type ConflictRow = {
   slug: string;
   title: string;
   country: string;
+  country_code: string;
   status: ConflictStatus;
   summary: string;
   fatalities: number | null;
@@ -32,6 +33,7 @@ export type Conflict = {
   slug: string;
   title: string;
   country: string;
+  countryCode: string;
   status: ConflictStatus;
   summary: string;
   fatalities: number | null;
@@ -48,6 +50,7 @@ export type ConflictSummary = Pick<
   | "slug"
   | "title"
   | "country"
+  | "countryCode"
   | "status"
   | "summary"
   | "fatalities"

@@ -21,6 +21,7 @@ create table conflicts (
   slug           text not null unique,
   title          text not null,
   country        text not null,
+  country_code   text not null,  -- ISO3 code used for UNHCR lookups (e.g. SDN, PSE)
   status         conflict_status not null default 'active',
   summary        text not null default '',
   fatalities     integer,
