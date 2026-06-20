@@ -4,11 +4,19 @@ type GeneratedSource = { name: string; url: string };
 
 type GeneratedAction = { label: string; url: string };
 
+type GeneratedStats = {
+  fatalities: number | null;
+  displaced: number | null;
+  refugees: number | null;
+  childrenAffected: number | null;
+};
+
 type GeneratedContent = {
   summary: string;
   keyFacts: string[];
   sources: GeneratedSource[];
   actions: GeneratedAction[];
+  stats: GeneratedStats;
   region: string;
 };
 
@@ -222,6 +230,73 @@ async function verifyActionLinks(actions: GeneratedAction[]): Promise<GeneratedA
   return verified;
 }
 
+function parseNumber(text: string): number | null {
+  const cleaned = text.replace(/,/g, "").trim();
+
+  const millionMatch = cleaned.match(/([\d.]+)\s*million/i);
+  if (millionMatch) return Math.round(parseFloat(millionMatch[1]) * 1_000_000);
+
+  const thousandMatch = cleaned.match(/([\d.]+)\s*thousand/i);
+  if (thousandMatch) return Math.round(parseFloat(thousandMatch[1]) * 1_000);
+
+  const numMatch = cleaned.match(/(\d[\d,]*)/);
+  if (numMatch) return parseInt(numMatch[1].replace(/,/g, ""), 10);
+
+  return null;
+}
+
+function extractStatsFromText(text: string): GeneratedStats {
+  const stats: GeneratedStats = { fatalities: null, displaced: null, refugees: null, childrenAffected: null };
+
+  const fatalityPatterns = [
+    /(\d[\d,.]*\s*(?:million|thousand)?)\s*(?:people\s+)?(?:killed|dead|deaths|fatalities|died|casualties)/i,
+    /(?:killed|dead|deaths|fatalities|casualties)[:\s]+(\d[\d,.]*\s*(?:million|thousand)?)/i,
+    /death\s+toll[:\s]+(\d[\d,.]*\s*(?:million|thousand)?)/i,
+  ];
+
+  const displacedPatterns = [
+    /(\d[\d,.]*\s*(?:million|thousand)?)\s*(?:people\s+)?(?:displaced|fled|internally displaced|IDPs)/i,
+    /(?:displaced|IDPs)[:\s]+(\d[\d,.]*\s*(?:million|thousand)?)/i,
+  ];
+
+  const refugeePatterns = [
+    /(\d[\d,.]*\s*(?:million|thousand)?)\s*(?:refugees|asylum seekers)/i,
+    /(?:refugees)[:\s]+(\d[\d,.]*\s*(?:million|thousand)?)/i,
+  ];
+
+  const childrenPatterns = [
+    /(\d[\d,.]*\s*(?:million|thousand)?)\s*children\s*(?:affected|killed|displaced|need|at risk|out of school|malnourished)/i,
+    /children[:\s]+(\d[\d,.]*\s*(?:million|thousand)?)\s*(?:affected|need)/i,
+  ];
+
+  function findFirst(patterns: RegExp[]): number | null {
+    for (const pattern of patterns) {
+      const match = text.match(pattern);
+      if (match) {
+        const num = parseNumber(match[1]);
+        if (num && num > 0) return num;
+      }
+    }
+    return null;
+  }
+
+  stats.fatalities = findFirst(fatalityPatterns);
+  stats.displaced = findFirst(displacedPatterns);
+  stats.refugees = findFirst(refugeePatterns);
+  stats.childrenAffected = findFirst(childrenPatterns);
+
+  return stats;
+}
+
+function mergeStats(textStats: GeneratedStats, unhcrRefugees: number, unhcrDisplaced: number): GeneratedStats {
+  return {
+    fatalities: textStats.fatalities,
+    displaced: unhcrDisplaced > 0 ? unhcrDisplaced : textStats.displaced,
+    refugees: unhcrRefugees > 0 ? unhcrRefugees : textStats.refugees,
+    childrenAffected: textStats.childrenAffected,
+  };
+}
+
 function detectRegion(country: string): string {
   const regions: Record<string, string[]> = {
     "East Africa": ["Sudan", "South Sudan", "Somalia", "Ethiopia", "Eritrea", "Kenya", "Uganda", "Tanzania", "Rwanda", "Burundi", "Djibouti"],
@@ -293,11 +368,16 @@ export async function POST(request: NextRequest) {
 
   const region = detectRegion(country.trim());
 
+  const allText = [summary, ...allFacts].join(" ");
+  const textStats = extractStatsFromText(allText);
+  const stats = mergeStats(textStats, unhcr.refugees, unhcr.displaced);
+
   const content: GeneratedContent & { message?: string } = {
     summary,
     keyFacts: allFacts,
     sources: allSources,
     actions,
+    stats,
     region,
   };
 

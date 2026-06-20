@@ -142,6 +142,10 @@ export function SubmitConflictForm() {
   const [region, setRegion] = useState("");
   const [summary, setSummary] = useState("");
   const [keyFacts, setKeyFacts] = useState<string[]>([]);
+  const [fatalities, setFatalities] = useState("");
+  const [displaced, setDisplaced] = useState("");
+  const [refugees, setRefugees] = useState("");
+  const [childrenAffected, setChildrenAffected] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -214,6 +218,12 @@ export function SubmitConflictForm() {
       if (data.keyFacts?.length > 0) setKeyFacts(data.keyFacts);
       if (data.sources?.length > 0) setSources(data.sources);
       if (data.actions?.length > 0) setActions(data.actions.map((a: { label: string; url: string }) => ({ name: a.label, url: a.url })));
+      if (data.stats) {
+        if (data.stats.fatalities) setFatalities(String(data.stats.fatalities));
+        if (data.stats.displaced) setDisplaced(String(data.stats.displaced));
+        if (data.stats.refugees) setRefugees(String(data.stats.refugees));
+        if (data.stats.childrenAffected) setChildrenAffected(String(data.stats.childrenAffected));
+      }
       if (data.region && !region) setRegion(data.region);
     } catch {
       setError("Could not generate content. You can still write your own.");
@@ -278,6 +288,10 @@ export function SubmitConflictForm() {
           region,
           summary,
           keyFacts: validFacts,
+          fatalities: fatalities ? parseInt(fatalities, 10) : null,
+          displaced: displaced ? parseInt(displaced, 10) : null,
+          refugees: refugees ? parseInt(refugees, 10) : null,
+          childrenAffected: childrenAffected ? parseInt(childrenAffected, 10) : null,
           sources: validSources,
           actions: validActions,
           imageUrl: imageUrl || undefined,
@@ -347,6 +361,55 @@ export function SubmitConflictForm() {
           rows={8}
           className="w-full resize-none border-b border-neutral-200 bg-transparent py-2.5 text-sm outline-none transition-colors focus:border-black placeholder:text-neutral-300"
         />
+      </div>
+
+      <div>
+        <FieldLabel>Key statistics</FieldLabel>
+        <p className="mb-3 text-xs text-neutral-400">
+          These are auto-filled when available. You can also enter them manually.
+        </p>
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div>
+            <span className="mb-1 block text-xs text-neutral-400">Fatalities</span>
+            <input
+              type="number"
+              placeholder="0"
+              value={fatalities}
+              onChange={(e) => setFatalities(e.target.value)}
+              className="w-full border-b border-neutral-200 bg-transparent py-2.5 text-sm outline-none transition-colors focus:border-black placeholder:text-neutral-300"
+            />
+          </div>
+          <div>
+            <span className="mb-1 block text-xs text-neutral-400">Displaced</span>
+            <input
+              type="number"
+              placeholder="0"
+              value={displaced}
+              onChange={(e) => setDisplaced(e.target.value)}
+              className="w-full border-b border-neutral-200 bg-transparent py-2.5 text-sm outline-none transition-colors focus:border-black placeholder:text-neutral-300"
+            />
+          </div>
+          <div>
+            <span className="mb-1 block text-xs text-neutral-400">Refugees</span>
+            <input
+              type="number"
+              placeholder="0"
+              value={refugees}
+              onChange={(e) => setRefugees(e.target.value)}
+              className="w-full border-b border-neutral-200 bg-transparent py-2.5 text-sm outline-none transition-colors focus:border-black placeholder:text-neutral-300"
+            />
+          </div>
+          <div>
+            <span className="mb-1 block text-xs text-neutral-400">Children affected</span>
+            <input
+              type="number"
+              placeholder="0"
+              value={childrenAffected}
+              onChange={(e) => setChildrenAffected(e.target.value)}
+              className="w-full border-b border-neutral-200 bg-transparent py-2.5 text-sm outline-none transition-colors focus:border-black placeholder:text-neutral-300"
+            />
+          </div>
+        </div>
       </div>
 
       <KeyFactsFields
