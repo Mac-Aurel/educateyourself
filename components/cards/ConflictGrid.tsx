@@ -7,7 +7,7 @@ type ConflictGridProps = {
 
 function EmptyState() {
   return (
-    <p className="col-span-full text-center text-sm text-zinc-500">
+    <p className="col-span-full py-20 text-center text-[10px] uppercase tracking-[0.2em] text-neutral-400">
       No conflicts found.
     </p>
   );
@@ -15,7 +15,7 @@ function EmptyState() {
 
 export function ConflictGrid({ conflicts }: ConflictGridProps) {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-x-6 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
       {conflicts.length === 0 ? (
         <EmptyState />
       ) : (

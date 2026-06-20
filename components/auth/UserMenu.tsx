@@ -18,14 +18,14 @@ export function UserMenu({ username, onLogout }: UserMenuProps) {
   }
 
   return (
-    <div className="flex items-center gap-3">
-      <span className="text-sm text-zinc-600 dark:text-zinc-400">
-        Signed in as <span className="font-medium text-zinc-900 dark:text-zinc-100">{username}</span>
+    <div className="flex items-center gap-4">
+      <span className="text-xs text-neutral-500">
+        Signed in as <span className="text-black">{username}</span>
       </span>
       <button
         onClick={handleLogout}
         disabled={loading}
-        className="text-xs text-zinc-400 hover:text-zinc-600 disabled:opacity-40 dark:hover:text-zinc-300"
+        className="text-[10px] uppercase tracking-[0.15em] text-neutral-400 underline underline-offset-4 transition-opacity hover:opacity-60 disabled:opacity-30"
       >
         Sign out
       </button>

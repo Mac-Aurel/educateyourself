@@ -5,37 +5,40 @@ import { getConflictBySlug } from "@/lib/supabase/queries/conflicts";
 import { getDiscussionsByConflict } from "@/lib/supabase/queries/discussions";
 import { DiscussionThread } from "@/components/discussion/DiscussionThread";
 import { Badge } from "@/components/ui/Badge";
-import { StatItem } from "@/components/ui/StatItem";
 import { ActionLink } from "@/components/ui/ActionLink";
 import { formatNumber } from "@/lib/utils/formatNumber";
-import { formatDate } from "@/lib/utils/formatDate";
 import type { Conflict } from "@/types/conflict";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
-function BackLink() {
+function Navbar() {
   return (
-    <Link
-      href="/"
-      className="mb-8 inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
-    >
-      ← All conflicts
-    </Link>
+    <nav className="flex items-center justify-between border-b border-neutral-200 px-6 py-5 sm:px-10">
+      <Link href="/" className="text-xs uppercase tracking-[0.3em]">
+        Raise ur voice
+      </Link>
+      <Link
+        href="/submit"
+        className="text-xs uppercase tracking-[0.2em] underline underline-offset-4 transition-opacity hover:opacity-60"
+      >
+        Submit
+      </Link>
+    </nav>
   );
 }
 
 function ConflictImage({ imageUrl, title }: { imageUrl: string | null; title: string }) {
   if (!imageUrl) return null;
   return (
-    <div className="relative mb-6 h-64 w-full overflow-hidden rounded-xl sm:h-80">
+    <div className="relative h-[50vh] w-full overflow-hidden sm:h-[60vh]">
       <Image
         src={imageUrl}
         alt={title}
         fill
         className="object-cover"
-        sizes="(max-width: 768px) 100vw, 768px"
+        sizes="100vw"
         priority
       />
     </div>
@@ -44,33 +47,35 @@ function ConflictImage({ imageUrl, title }: { imageUrl: string | null; title: st
 
 function ConflictHeader({ conflict }: { conflict: Conflict }) {
   return (
-    <div className="flex flex-wrap items-start justify-between gap-4">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-          {conflict.title}
-        </h1>
-        <p className="mt-1 text-zinc-500">
-          {conflict.country} · {conflict.region}
-        </p>
-        {conflict.startedAt && (
-          <p className="mt-1 text-sm text-zinc-400">Since {conflict.startedAt}</p>
-        )}
-      </div>
+    <div className="flex flex-col items-center pt-16 pb-10 text-center">
       <Badge status={conflict.status} />
+      <h1 className="mt-4 text-[clamp(1.5rem,4vw,2.5rem)] font-light uppercase tracking-[0.2em] leading-tight">
+        {conflict.title}
+      </h1>
+      <p className="mt-3 text-[10px] uppercase tracking-[0.2em] text-neutral-400">
+        {conflict.country} · {conflict.region}
+        {conflict.startedAt ? ` · Since ${conflict.startedAt}` : ""}
+      </p>
     </div>
   );
 }
 
 function ConflictStats({ conflict }: { conflict: Conflict }) {
   return (
-    <div className="mt-6 grid grid-cols-2 gap-4 rounded-xl border border-zinc-100 bg-zinc-50 p-5 sm:grid-cols-4 dark:border-zinc-800 dark:bg-zinc-900">
-      <StatItem label="Fatalities" value={formatNumber(conflict.fatalities)} />
-      <StatItem label="Displaced" value={formatNumber(conflict.displaced)} />
-      <StatItem label="Refugees" value={formatNumber(conflict.refugees)} />
-      <StatItem label="Children affected" value={formatNumber(conflict.childrenAffected)} />
-      {conflict.lastSyncedAt && (
-        <StatItem label="Last updated" value={formatDate(conflict.lastSyncedAt)} />
-      )}
+    <div className="grid grid-cols-2 gap-8 border-y border-neutral-200 py-8 sm:grid-cols-4">
+      <StatBlock label="Fatalities" value={formatNumber(conflict.fatalities)} />
+      <StatBlock label="Displaced" value={formatNumber(conflict.displaced)} />
+      <StatBlock label="Refugees" value={formatNumber(conflict.refugees)} />
+      <StatBlock label="Children affected" value={formatNumber(conflict.childrenAffected)} />
+    </div>
+  );
+}
+
+function StatBlock({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col items-center gap-1 text-center">
+      <span className="text-lg font-light">{value}</span>
+      <span className="text-[10px] uppercase tracking-[0.2em] text-neutral-400">{label}</span>
     </div>
   );
 }
@@ -78,11 +83,9 @@ function ConflictStats({ conflict }: { conflict: Conflict }) {
 function ConflictSummary({ summary }: { summary: string }) {
   if (!summary) return null;
   return (
-    <div className="mt-6">
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">
-        Overview
-      </h2>
-      <p className="leading-relaxed text-zinc-700 dark:text-zinc-300">{summary}</p>
+    <div className="py-10">
+      <SectionLabel>Overview</SectionLabel>
+      <p className="mt-4 text-sm leading-[1.8] text-neutral-600">{summary}</p>
     </div>
   );
 }
@@ -90,17 +93,14 @@ function ConflictSummary({ summary }: { summary: string }) {
 function ConflictKeyFacts({ facts }: { facts: string[] }) {
   if (facts.length === 0) return null;
   return (
-    <div className="mt-8">
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">
-        Key facts
-      </h2>
-      <ul className="grid gap-2 sm:grid-cols-2">
+    <div className="border-t border-neutral-200 py-10">
+      <SectionLabel>Key facts</SectionLabel>
+      <ul className="mt-4 grid gap-3 sm:grid-cols-2">
         {facts.map((fact) => (
           <li
             key={fact}
-            className="flex items-start gap-2 rounded-lg border border-zinc-100 bg-zinc-50 px-4 py-3 text-sm text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300"
+            className="border-l-2 border-black pl-4 text-[11px] leading-relaxed text-neutral-600"
           >
-            <span className="mt-0.5 shrink-0 text-red-500">●</span>
             {fact}
           </li>
         ))}
@@ -112,18 +112,16 @@ function ConflictKeyFacts({ facts }: { facts: string[] }) {
 function ConflictSources({ conflict }: { conflict: Conflict }) {
   if (conflict.sources.length === 0) return null;
   return (
-    <div className="mt-8">
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">
-        Sources
-      </h2>
-      <ul className="flex flex-col gap-1">
+    <div className="border-t border-neutral-200 py-10">
+      <SectionLabel>Sources</SectionLabel>
+      <ul className="mt-4 flex flex-col gap-2">
         {conflict.sources.map((source) => (
           <li key={source.url}>
             <a
               href={source.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-zinc-600 underline-offset-2 hover:underline dark:text-zinc-400"
+              className="text-xs text-neutral-500 underline underline-offset-4 transition-opacity hover:opacity-60"
             >
               {source.name}
             </a>
@@ -137,16 +135,22 @@ function ConflictSources({ conflict }: { conflict: Conflict }) {
 function ConflictActions({ conflict }: { conflict: Conflict }) {
   if (conflict.actions.length === 0) return null;
   return (
-    <div className="mt-8">
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-400">
-        How to act
-      </h2>
-      <div className="flex flex-wrap gap-2">
+    <div className="border-t border-neutral-200 py-10">
+      <SectionLabel>How to act</SectionLabel>
+      <div className="mt-4 flex flex-wrap gap-3">
         {conflict.actions.map((action) => (
           <ActionLink key={action.url} action={action} />
         ))}
       </div>
     </div>
+  );
+}
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="text-[10px] uppercase tracking-[0.3em] text-neutral-400">
+      {children}
+    </h2>
   );
 }
 
@@ -159,16 +163,23 @@ export default async function ConflictPage({ params }: PageProps) {
   const messages = await getDiscussionsByConflict(conflict.id);
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-16">
-      <BackLink />
+    <>
+      <Navbar />
       <ConflictImage imageUrl={conflict.imageUrl} title={conflict.title} />
-      <ConflictHeader conflict={conflict} />
-      <ConflictStats conflict={conflict} />
-      <ConflictSummary summary={conflict.summary} />
-      <ConflictKeyFacts facts={conflict.keyFacts} />
-      <ConflictSources conflict={conflict} />
-      <ConflictActions conflict={conflict} />
-      <DiscussionThread conflictId={conflict.id} initialMessages={messages} />
-    </main>
+      <main className="mx-auto max-w-2xl px-6">
+        <ConflictHeader conflict={conflict} />
+        <ConflictStats conflict={conflict} />
+        <ConflictSummary summary={conflict.summary} />
+        <ConflictKeyFacts facts={conflict.keyFacts} />
+        <ConflictSources conflict={conflict} />
+        <ConflictActions conflict={conflict} />
+        <div className="border-t border-neutral-200 py-10">
+          <DiscussionThread conflictId={conflict.id} initialMessages={messages} />
+        </div>
+      </main>
+      <footer className="border-t border-neutral-200 py-10 text-center text-[10px] uppercase tracking-[0.3em] text-neutral-400">
+        Raise ur voice
+      </footer>
+    </>
   );
 }

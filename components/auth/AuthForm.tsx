@@ -35,7 +35,7 @@ export function AuthForm({ onSuccess }: AuthFormProps) {
     setError(null);
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -52,7 +52,7 @@ export function AuthForm({ onSuccess }: AuthFormProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+      <h3 className="text-[10px] uppercase tracking-[0.2em] text-neutral-400">
         {mode === "login" ? "Sign in to discuss" : "Create an account"}
       </h3>
 
@@ -63,7 +63,7 @@ export function AuthForm({ onSuccess }: AuthFormProps) {
           value={username}
           autoComplete="username"
           onChange={(e) => setUsername(e.target.value)}
-          className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900"
+          className="border-b border-neutral-200 bg-transparent py-2.5 text-sm outline-none transition-colors focus:border-black placeholder:text-neutral-300"
         />
         <input
           type="password"
@@ -71,27 +71,27 @@ export function AuthForm({ onSuccess }: AuthFormProps) {
           value={password}
           autoComplete={mode === "login" ? "current-password" : "new-password"}
           onChange={(e) => setPassword(e.target.value)}
-          className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900"
+          className="border-b border-neutral-200 bg-transparent py-2.5 text-sm outline-none transition-colors focus:border-black placeholder:text-neutral-300"
         />
-        {error && <p className="text-xs text-red-500">{error}</p>}
+        {error && <p className="text-[11px] text-red-500">{error}</p>}
         <button
           type="submit"
           disabled={loading || !username || !password}
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-80 disabled:opacity-40 dark:bg-zinc-100 dark:text-zinc-900"
+          className="self-start bg-black px-6 py-2.5 text-[10px] uppercase tracking-[0.2em] text-white transition-opacity hover:opacity-80 disabled:opacity-30"
         >
-          {loading ? "…" : mode === "login" ? "Sign in" : "Create account"}
+          {loading ? "..." : mode === "login" ? "Sign in" : "Create account"}
         </button>
       </form>
 
       <button
         onClick={toggleMode}
-        className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+        className="self-start text-[10px] uppercase tracking-[0.15em] text-neutral-400 underline underline-offset-4 transition-opacity hover:opacity-60"
       >
         {mode === "login" ? "No account? Register" : "Already have an account? Sign in"}
       </button>
 
-      <p className="text-xs text-zinc-400">
-        Or post without an account — just type a name below.
+      <p className="text-[10px] text-neutral-400">
+        Or post without an account. Just type a name below.
       </p>
     </div>
   );

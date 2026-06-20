@@ -3,3 +3,8 @@
 @theme inline {
   --font-sans: var(--font-geist);
 }
+
+body {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}

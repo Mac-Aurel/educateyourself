@@ -1,9 +1,39 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 type Source = { name: string; url: string };
+
+function FieldLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <label className="mb-2 block text-[10px] uppercase tracking-[0.2em] text-neutral-400">
+      {children}
+    </label>
+  );
+}
+
+function TextInput({
+  value,
+  onChange,
+  placeholder,
+  type = "text",
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+  type?: string;
+}) {
+  return (
+    <input
+      type={type}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      className="w-full border-b border-neutral-200 bg-transparent py-2.5 text-sm outline-none transition-colors focus:border-black placeholder:text-neutral-300"
+    />
+  );
+}
 
 function SourceFields({
   sources,
@@ -18,31 +48,29 @@ function SourceFields({
 }) {
   return (
     <div>
-      <label className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-        Sources *
-      </label>
-      <div className="flex flex-col gap-3">
+      <FieldLabel>Sources *</FieldLabel>
+      <div className="flex flex-col gap-4">
         {sources.map((source, index) => (
-          <div key={index} className="flex gap-2">
+          <div key={index} className="flex gap-3">
             <input
               type="text"
               placeholder="Source name"
               value={source.name}
               onChange={(e) => onChange(index, "name", e.target.value)}
-              className="flex-1 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900"
+              className="flex-1 border-b border-neutral-200 bg-transparent py-2.5 text-sm outline-none transition-colors focus:border-black placeholder:text-neutral-300"
             />
             <input
               type="url"
               placeholder="https://..."
               value={source.url}
               onChange={(e) => onChange(index, "url", e.target.value)}
-              className="flex-[2] rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900"
+              className="flex-[2] border-b border-neutral-200 bg-transparent py-2.5 text-sm outline-none transition-colors focus:border-black placeholder:text-neutral-300"
             />
             {sources.length > 1 && (
               <button
                 type="button"
                 onClick={() => onRemove(index)}
-                className="rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-500 hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+                className="text-neutral-300 transition-colors hover:text-black"
               >
                 ×
               </button>
@@ -53,7 +81,7 @@ function SourceFields({
       <button
         type="button"
         onClick={onAdd}
-        className="mt-2 text-sm text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
+        className="mt-3 text-[10px] uppercase tracking-[0.15em] text-neutral-400 transition-opacity hover:opacity-60"
       >
         + Add another source
       </button>
@@ -74,23 +102,21 @@ function KeyFactsFields({
 }) {
   return (
     <div>
-      <label className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-        Key facts (optional)
-      </label>
-      <div className="flex flex-col gap-2">
+      <FieldLabel>Key facts (optional)</FieldLabel>
+      <div className="flex flex-col gap-3">
         {facts.map((fact, index) => (
-          <div key={index} className="flex gap-2">
+          <div key={index} className="flex gap-3">
             <input
               type="text"
               placeholder="e.g. 2 million people displaced"
               value={fact}
               onChange={(e) => onChange(index, e.target.value)}
-              className="flex-1 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900"
+              className="flex-1 border-b border-neutral-200 bg-transparent py-2.5 text-sm outline-none transition-colors focus:border-black placeholder:text-neutral-300"
             />
             <button
               type="button"
               onClick={() => onRemove(index)}
-              className="rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-500 hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+              className="text-neutral-300 transition-colors hover:text-black"
             >
               ×
             </button>
@@ -100,7 +126,7 @@ function KeyFactsFields({
       <button
         type="button"
         onClick={onAdd}
-        className="mt-2 text-sm text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
+        className="mt-3 text-[10px] uppercase tracking-[0.15em] text-neutral-400 transition-opacity hover:opacity-60"
       >
         + Add a fact
       </button>
@@ -110,12 +136,15 @@ function KeyFactsFields({
 
 export function SubmitConflictForm() {
   const router = useRouter();
-  const [title, setTitle] = useState("");
+  const searchParams = useSearchParams();
+  const [title, setTitle] = useState(searchParams.get("title") ?? "");
   const [country, setCountry] = useState("");
   const [region, setRegion] = useState("");
   const [summary, setSummary] = useState("");
   const [keyFacts, setKeyFacts] = useState<string[]>([]);
   const [imageUrl, setImageUrl] = useState("");
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [sources, setSources] = useState<Source[]>([{ name: "", url: "" }]);
   const [submitting, setSubmitting] = useState(false);
   const [generating, setGenerating] = useState(false);
@@ -150,7 +179,7 @@ export function SubmitConflictForm() {
 
   async function handleGenerate() {
     if (!country.trim()) {
-      setError("Enter a country name first, then click Generate.");
+      setError("Enter a country name first, then click generate.");
       return;
     }
 
@@ -167,10 +196,7 @@ export function SubmitConflictForm() {
 
       const data = await response.json();
 
-      if (data.message) {
-        setGenerateMessage(data.message);
-      }
-
+      if (data.message) setGenerateMessage(data.message);
       if (data.summary) setSummary(data.summary);
       if (data.keyFacts?.length > 0) setKeyFacts(data.keyFacts);
       if (data.sources?.length > 0) setSources(data.sources);
@@ -180,6 +206,41 @@ export function SubmitConflictForm() {
     } finally {
       setGenerating(false);
     }
+  }
+
+  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setError(null);
+    setImagePreview(URL.createObjectURL(file));
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error);
+        setImagePreview(null);
+        return;
+      }
+
+      setImageUrl(data.url);
+    } catch {
+      setError("Image upload failed. You can try again or paste a URL instead.");
+      setImagePreview(null);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  function removeImage() {
+    setImageUrl("");
+    setImagePreview(null);
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -221,49 +282,25 @@ export function SubmitConflictForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-8">
       <div>
-        <label className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          Title *
-        </label>
-        <input
-          type="text"
-          placeholder="e.g. Conflict in South Kivu"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900"
-        />
+        <FieldLabel>Title *</FieldLabel>
+        <TextInput value={title} onChange={setTitle} placeholder="e.g. Conflict in South Kivu" />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-6">
         <div>
-          <label className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            Country *
-          </label>
-          <input
-            type="text"
-            placeholder="e.g. Democratic Republic of the Congo"
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-            className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900"
-          />
+          <FieldLabel>Country *</FieldLabel>
+          <TextInput value={country} onChange={setCountry} placeholder="e.g. Sudan" />
         </div>
         <div>
-          <label className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            Region *
-          </label>
-          <input
-            type="text"
-            placeholder="e.g. Central Africa"
-            value={region}
-            onChange={(e) => setRegion(e.target.value)}
-            className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900"
-          />
+          <FieldLabel>Region *</FieldLabel>
+          <TextInput value={region} onChange={setRegion} placeholder="e.g. East Africa" />
         </div>
       </div>
 
-      <div className="rounded-xl border border-dashed border-zinc-300 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-900/50">
-        <p className="mb-3 text-sm text-zinc-600 dark:text-zinc-400">
+      <div className="border border-neutral-200 p-6">
+        <p className="mb-4 text-[11px] leading-relaxed text-neutral-500">
           Enter a country and title above, then click the button to search Wikipedia, ReliefWeb,
           UNHCR, and Google News for relevant information. You can edit everything after.
         </p>
@@ -271,20 +308,18 @@ export function SubmitConflictForm() {
           type="button"
           onClick={handleGenerate}
           disabled={generating}
-          className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:opacity-40 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
+          className="border border-black px-5 py-2.5 text-[10px] uppercase tracking-[0.2em] transition-colors hover:bg-black hover:text-white disabled:opacity-30"
         >
-          {generating ? "Searching across sources..." : "Search and auto-fill"}
+          {generating ? "Searching..." : "Search and auto-fill"}
         </button>
         {generateMessage && (
-          <p className="mt-2 text-xs text-zinc-400">{generateMessage}</p>
+          <p className="mt-3 text-[10px] text-neutral-400">{generateMessage}</p>
         )}
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          Summary *
-        </label>
-        <p className="mb-2 text-xs text-zinc-400">
+        <FieldLabel>Summary *</FieldLabel>
+        <p className="mb-2 text-[10px] text-neutral-400">
           Describe what is happening, who is affected, and why it matters. Minimum 50 characters.
         </p>
         <textarea
@@ -292,7 +327,7 @@ export function SubmitConflictForm() {
           value={summary}
           onChange={(e) => setSummary(e.target.value)}
           rows={8}
-          className="w-full resize-none rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900"
+          className="w-full resize-none border-b border-neutral-200 bg-transparent py-2.5 text-sm outline-none transition-colors focus:border-black placeholder:text-neutral-300"
         />
       </div>
 
@@ -311,30 +346,61 @@ export function SubmitConflictForm() {
       />
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          Image URL (optional)
-        </label>
-        <input
-          type="url"
-          placeholder="https://images.unsplash.com/..."
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-          className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900"
-        />
+        <FieldLabel>Image (optional)</FieldLabel>
+        {imagePreview || imageUrl ? (
+          <div className="relative mt-2">
+            <img
+              src={imagePreview ?? imageUrl}
+              alt="Preview"
+              className="aspect-video w-full object-cover"
+            />
+            <button
+              type="button"
+              onClick={removeImage}
+              className="absolute top-2 right-2 bg-black px-3 py-1.5 text-[10px] uppercase tracking-[0.15em] text-white transition-opacity hover:opacity-80"
+            >
+              Remove
+            </button>
+            {uploading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-white/70">
+                <span className="text-[10px] uppercase tracking-[0.2em]">Uploading...</span>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="mt-2 flex flex-col gap-4">
+            <label className="flex cursor-pointer flex-col items-center border border-dashed border-neutral-300 py-8 transition-colors hover:border-black">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-neutral-400">
+                Choose an image from your device
+              </span>
+              <span className="mt-1 text-[10px] text-neutral-300">JPEG, PNG or WebP, max 5MB</span>
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleFileUpload}
+                className="hidden"
+              />
+            </label>
+            <div className="flex items-center gap-3">
+              <div className="h-px flex-1 bg-neutral-200" />
+              <span className="text-[10px] uppercase tracking-[0.15em] text-neutral-300">or</span>
+              <div className="h-px flex-1 bg-neutral-200" />
+            </div>
+            <TextInput value={imageUrl} onChange={setImageUrl} placeholder="Paste an image URL" type="url" />
+          </div>
+        )}
       </div>
 
       {error && (
-        <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
-          {error}
-        </p>
+        <p className="text-[11px] text-red-500">{error}</p>
       )}
 
       <button
         type="submit"
         disabled={submitting}
-        className="self-end rounded-lg bg-zinc-900 px-6 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-80 disabled:opacity-40 dark:bg-zinc-100 dark:text-zinc-900"
+        className="self-end bg-black px-8 py-3 text-[10px] uppercase tracking-[0.2em] text-white transition-opacity hover:opacity-80 disabled:opacity-30"
       >
-        {submitting ? "Submitting..." : "Submit conflict"}
+        {submitting ? "Submitting..." : "Submit"}
       </button>
     </form>
   );

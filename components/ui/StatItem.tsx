@@ -5,9 +5,9 @@ type StatItemProps = {
 
 export function StatItem({ label, value }: StatItemProps) {
   return (
-    <div className="flex flex-col gap-0.5">
-      <span className="text-xs text-zinc-500">{label}</span>
-      <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">{value}</span>
+    <div className="flex flex-col gap-1">
+      <span className="text-[10px] uppercase tracking-[0.2em] text-neutral-400">{label}</span>
+      <span className="text-sm font-light">{value}</span>
     </div>
   );
 }

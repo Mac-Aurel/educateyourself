@@ -5,9 +5,9 @@ import "./globals.css";
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
 
 export const metadata: Metadata = {
-  title: "raise ur voice",
+  title: "RAISE UR VOICE",
   description:
-    "Stay informed on global conflicts and human rights crises. Read, discuss, and act.",
+    "Global conflicts and human rights crises. Read, discuss, act.",
 };
 
 export default function RootLayout({
@@ -17,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${geist.variable} h-full`}>
-      <body className="min-h-full bg-zinc-50 text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100">
+      <body className="min-h-full bg-white text-black antialiased">
         {children}
       </body>
     </html>

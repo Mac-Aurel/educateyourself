@@ -77,14 +77,14 @@ export function DiscussionThread({ conflictId, initialMessages }: DiscussionThre
   const threads = groupReplies(messages);
 
   return (
-    <section className="mt-12">
-      <h2 className="mb-6 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+    <section>
+      <h2 className="text-[10px] uppercase tracking-[0.3em] text-neutral-400">
         Discussion ({messages.length})
       </h2>
 
-      <div className="mb-8 flex flex-col gap-6">
+      <div className="mt-6 mb-8 flex flex-col gap-6">
         {threads.length === 0 ? (
-          <p className="text-sm text-zinc-400">No messages yet. Be the first to discuss.</p>
+          <p className="text-xs text-neutral-400">No messages yet. Be the first to discuss.</p>
         ) : (
           threads.map(({ parent, replies }) => (
             <div key={parent.id} className="flex flex-col gap-3">
@@ -97,7 +97,7 @@ export function DiscussionThread({ conflictId, initialMessages }: DiscussionThre
         )}
       </div>
 
-      <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="border border-neutral-200 p-5">
         {checked && (
           <div className="mb-4">
             {user ? (

@@ -23,7 +23,7 @@ export function CommentForm({ conflictId, parentId = null, prefilledName, onMess
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!isFormValid(authorName, content)) return;
 
@@ -58,15 +58,15 @@ export function CommentForm({ conflictId, parentId = null, prefilledName, onMess
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <input
         type="text"
-        placeholder="Your name (anonymous is fine)"
+        placeholder="Your name"
         value={authorName}
         maxLength={AUTHOR_MAX_LENGTH}
         readOnly={!!prefilledName}
         onChange={(e) => setAuthorName(e.target.value)}
-        className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:border-zinc-400 disabled:cursor-not-allowed dark:border-zinc-700 dark:bg-zinc-900 read-only:opacity-60"
+        className="border-b border-neutral-200 bg-transparent py-2.5 text-sm outline-none transition-colors focus:border-black placeholder:text-neutral-300 read-only:text-neutral-400"
       />
       <textarea
         placeholder="Share your thoughts..."
@@ -74,15 +74,15 @@ export function CommentForm({ conflictId, parentId = null, prefilledName, onMess
         maxLength={CONTENT_MAX_LENGTH}
         rows={3}
         onChange={(e) => setContent(e.target.value)}
-        className="resize-none rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900"
+        className="resize-none border-b border-neutral-200 bg-transparent py-2.5 text-sm outline-none transition-colors focus:border-black placeholder:text-neutral-300"
       />
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      {error && <p className="text-[11px] text-red-500">{error}</p>}
       <button
         type="submit"
         disabled={submitting || !isFormValid(authorName, content)}
-        className="self-end rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-80 disabled:opacity-40 dark:bg-zinc-100 dark:text-zinc-900"
+        className="self-end bg-black px-6 py-2.5 text-[10px] uppercase tracking-[0.2em] text-white transition-opacity hover:opacity-80 disabled:opacity-30"
       >
-        {submitting ? "Posting…" : "Post"}
+        {submitting ? "Posting..." : "Post"}
       </button>
     </form>
   );
