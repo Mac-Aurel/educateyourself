@@ -34,6 +34,7 @@ create table conflicts (
   image_url      text,
   sources        jsonb not null default '[]',
   actions        jsonb not null default '[]',
+  submitted_by   text,
   last_synced_at timestamptz,
   created_at     timestamptz not null default now()
 );
@@ -90,9 +91,18 @@ create policy "conflicts: public read"
   on conflicts for select
   using (true);
 
--- Only the service role (our sync route) can insert or update conflicts
+-- Anyone can submit a new conflict
+create policy "conflicts: public insert"
+  on conflicts for insert
+  with check (true);
+
+-- Only the service role (our sync route) can update or delete conflicts
 create policy "conflicts: service role write"
-  on conflicts for all
+  on conflicts for update
+  using (auth.role() = 'service_role');
+
+create policy "conflicts: service role delete"
+  on conflicts for delete
   using (auth.role() = 'service_role');
 
 -- Anyone can read discussions
