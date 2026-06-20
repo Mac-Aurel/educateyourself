@@ -172,7 +172,7 @@ export default async function ConflictPage({ params }: PageProps) {
           <DiscussionThread conflictId={conflict.id} initialMessages={messages} />
         </div>
       </main>
-      <footer className="border-t border-neutral-200 py-8 text-center text-xs uppercase tracking-[0.2em] text-neutral-400 sm:py-10">
+      <footer className="notranslate border-t border-neutral-200 py-8 text-center text-xs uppercase tracking-[0.2em] text-neutral-400 sm:py-10" translate="no">
         Raise ur voice
       </footer>
     </>

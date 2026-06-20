@@ -6,7 +6,7 @@ import { Navbar } from "@/components/layout/Navbar";
 function Hero() {
   return (
     <div className="flex flex-col items-center px-6 pt-14 pb-12 text-center sm:pt-24 sm:pb-16">
-      <h1 className="text-3xl font-light uppercase tracking-[0.2em] leading-tight sm:text-5xl sm:tracking-[0.3em]">
+      <h1 className="notranslate text-3xl font-light uppercase tracking-[0.2em] leading-tight sm:text-5xl sm:tracking-[0.3em]" translate="no">
         Raise ur voice
       </h1>
       <p className="mt-4 max-w-md text-sm uppercase tracking-[0.15em] text-neutral-500 leading-relaxed sm:text-xs sm:tracking-[0.2em]">
@@ -40,7 +40,7 @@ export default async function HomePage() {
           <ConflictGrid conflicts={conflicts} />
         </section>
       </main>
-      <footer className="border-t border-neutral-200 py-8 text-center text-xs uppercase tracking-[0.2em] text-neutral-400 sm:py-10">
+      <footer className="notranslate border-t border-neutral-200 py-8 text-center text-xs uppercase tracking-[0.2em] text-neutral-400 sm:py-10" translate="no">
         Raise ur voice
       </footer>
     </>
