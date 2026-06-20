@@ -1,17 +1,7 @@
 import { Suspense } from "react";
-import Link from "next/link";
 import { SubmitConflictForm } from "@/components/submit/SubmitConflictForm";
 import { AuthGate } from "@/components/submit/AuthGate";
-
-function Navbar() {
-  return (
-    <nav className="flex items-center justify-between border-b border-neutral-200 px-5 py-4 sm:px-10 sm:py-5">
-      <Link href="/" className="text-xs font-medium uppercase tracking-[0.25em]">
-        Raise ur voice
-      </Link>
-    </nav>
-  );
-}
+import { Navbar } from "@/components/layout/Navbar";
 
 export default function SubmitPage() {
   return (

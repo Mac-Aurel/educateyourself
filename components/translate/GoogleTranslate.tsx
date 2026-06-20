@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 declare global {
   interface Window {
@@ -10,6 +10,8 @@ declare global {
 }
 
 export function GoogleTranslate() {
+  const [open, setOpen] = useState(false);
+
   useEffect(() => {
     if (document.getElementById("google-translate-script")) return;
 
@@ -31,5 +33,23 @@ export function GoogleTranslate() {
     document.body.appendChild(script);
   }, []);
 
-  return <div id="google_translate_element" />;
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="text-xs uppercase tracking-[0.1em] text-neutral-400 transition-opacity hover:text-black"
+        title="Translate"
+      >
+        🌐
+      </button>
+      <div
+        className={`absolute right-0 top-full z-50 mt-1 border border-neutral-200 bg-white p-2 shadow-sm transition-all ${
+          open ? "visible opacity-100" : "invisible opacity-0"
+        }`}
+      >
+        <div id="google_translate_element" />
+      </div>
+    </div>
+  );
 }
