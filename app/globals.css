@@ -8,3 +8,26 @@ body {
   font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
+
+.goog-te-banner-frame { display: none !important; }
+body { top: 0 !important; }
+
+#google_translate_element select {
+  border: 1px solid #e5e5e5;
+  background: white;
+  padding: 4px 8px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  outline: none;
+  cursor: pointer;
+}
+
+.goog-logo-link,
+.goog-te-gadget > span {
+  display: none !important;
+}
+
+.skiptranslate iframe {
+  display: none !important;
+}
