@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { SubmitConflictForm } from "@/components/submit/SubmitConflictForm";
 
@@ -24,7 +25,9 @@ export default function SubmitPage() {
           Add a title, a summary of what is happening, and at least one reliable source.
         </p>
 
-        <SubmitConflictForm />
+        <Suspense>
+          <SubmitConflictForm />
+        </Suspense>
       </main>
     </>
   );
