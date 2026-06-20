@@ -9,7 +9,7 @@ function Hero() {
       <h1 className="notranslate text-3xl font-light uppercase tracking-[0.2em] leading-tight sm:text-5xl sm:tracking-[0.3em]" translate="no">
         Raise ur voice
       </h1>
-      <p className="mt-4 max-w-md text-sm uppercase tracking-[0.15em] text-neutral-500 leading-relaxed sm:text-xs sm:tracking-[0.2em]">
+      <p className="notranslate mt-4 max-w-md text-sm uppercase tracking-[0.15em] text-neutral-500 leading-relaxed sm:text-xs sm:tracking-[0.2em]" translate="no">
         Global conflicts and human rights crises. Read. Discuss. Act.
       </p>
     </div>
