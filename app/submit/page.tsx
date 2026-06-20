@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { SubmitConflictForm } from "@/components/submit/SubmitConflictForm";
+import { AuthGate } from "@/components/submit/AuthGate";
 
 function Navbar() {
   return (
@@ -26,7 +27,9 @@ export default function SubmitPage() {
         </p>
 
         <Suspense>
-          <SubmitConflictForm />
+          <AuthGate>
+            <SubmitConflictForm />
+          </AuthGate>
         </Suspense>
       </main>
     </>

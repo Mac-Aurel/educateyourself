@@ -7,6 +7,7 @@ import { DiscussionThread } from "@/components/discussion/DiscussionThread";
 import { Badge } from "@/components/ui/Badge";
 import { ActionLink } from "@/components/ui/ActionLink";
 import { formatNumber } from "@/lib/utils/formatNumber";
+import { DeleteConflictButton } from "@/components/cards/DeleteConflictButton";
 import type { Conflict } from "@/types/conflict";
 
 type PageProps = {
@@ -173,6 +174,16 @@ export default async function ConflictPage({ params }: PageProps) {
         <ConflictKeyFacts facts={conflict.keyFacts} />
         <ConflictSources conflict={conflict} />
         <ConflictActions conflict={conflict} />
+        {conflict.submittedBy && (
+          <div className="border-t border-neutral-200 py-6">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-neutral-400">
+                Submitted by {conflict.submittedBy}
+              </span>
+              <DeleteConflictButton slug={conflict.slug} submittedBy={conflict.submittedBy} />
+            </div>
+          </div>
+        )}
         <div className="border-t border-neutral-200 py-8 sm:py-10">
           <DiscussionThread conflictId={conflict.id} initialMessages={messages} />
         </div>

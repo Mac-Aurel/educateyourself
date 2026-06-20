@@ -27,6 +27,7 @@ export type ConflictRow = {
   refugees: number | null;
   children_affected: number | null;
   image_url: string | null;
+  submitted_by: string | null;
   sources: ConflictSource[];
   actions: ConflictAction[];
   last_synced_at: string | null;
@@ -50,6 +51,7 @@ export type Conflict = {
   refugees: number | null;
   childrenAffected: number | null;
   imageUrl: string | null;
+  submittedBy: string | null;
   sources: ConflictSource[];
   actions: ConflictAction[];
   lastSyncedAt: string | null;

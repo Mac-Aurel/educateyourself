@@ -18,6 +18,7 @@ export function mapConflictRow(row: ConflictRow): Conflict {
     refugees: row.refugees,
     childrenAffected: row.children_affected,
     imageUrl: row.image_url,
+    submittedBy: row.submitted_by,
     sources: row.sources,
     actions: row.actions,
     lastSyncedAt: row.last_synced_at,

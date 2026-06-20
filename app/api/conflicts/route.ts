@@ -67,6 +67,10 @@ export async function POST(request: NextRequest) {
   }
 
   const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: "You must be signed in to submit a conflict" }, { status: 401 });
+  }
+
   const slug = slugify(validated.title);
 
   try {
@@ -87,7 +91,7 @@ export async function POST(request: NextRequest) {
         sources: validated.sources,
         actions: [],
         image_url: validated.imageUrl ?? null,
-        submitted_by: session?.username ?? "anonymous",
+        submitted_by: session.username,
       })
       .select("slug")
       .single();
