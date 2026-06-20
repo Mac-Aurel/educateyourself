@@ -16,6 +16,8 @@ export async function GET() {
 
 type SourceInput = { name: string; url: string };
 
+type ActionInput = { label: string; url: string };
+
 type SubmissionInput = {
   title: string;
   country: string;
@@ -23,6 +25,7 @@ type SubmissionInput = {
   summary: string;
   keyFacts: string[];
   sources: SourceInput[];
+  actions: ActionInput[];
   imageUrl?: string;
 };
 
@@ -45,7 +48,7 @@ function validateSubmission(body: Record<string, unknown>): SubmissionInput | st
     return "At least one source is required";
   }
 
-  const { keyFacts } = body as { keyFacts?: string[] };
+  const { keyFacts, actions } = body as { keyFacts?: string[]; actions?: ActionInput[] };
 
   return {
     title: title.trim(),
@@ -54,6 +57,7 @@ function validateSubmission(body: Record<string, unknown>): SubmissionInput | st
     summary: summary.trim(),
     keyFacts: Array.isArray(keyFacts) ? keyFacts.filter((f): f is string => typeof f === "string" && f.trim().length > 0) : [],
     sources: sources as SourceInput[],
+    actions: Array.isArray(actions) ? actions.filter((a) => a.label?.trim() && a.url?.trim()) : [],
     imageUrl: typeof imageUrl === "string" && imageUrl.trim() ? imageUrl.trim() : undefined,
   };
 }
@@ -89,7 +93,7 @@ export async function POST(request: NextRequest) {
         summary: validated.summary,
         key_facts: validated.keyFacts,
         sources: validated.sources,
-        actions: [],
+        actions: validated.actions,
         image_url: validated.imageUrl ?? null,
         submitted_by: session.username,
       })

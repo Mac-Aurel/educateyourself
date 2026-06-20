@@ -2,10 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 
 type GeneratedSource = { name: string; url: string };
 
+type GeneratedAction = { label: string; url: string };
+
 type GeneratedContent = {
   summary: string;
   keyFacts: string[];
   sources: GeneratedSource[];
+  actions: GeneratedAction[];
   region: string;
 };
 
@@ -185,6 +188,40 @@ function formatBigNumber(n: number): string {
   return n.toString();
 }
 
+function buildActionLinks(country: string): GeneratedAction[] {
+  const slug = country.toLowerCase().replace(/\s+/g, "-");
+  const actions: GeneratedAction[] = [];
+
+  const ngos: { label: string; urlPattern: string }[] = [
+    { label: `Donate to MSF for ${country}`, urlPattern: `https://www.msf.org/${slug}` },
+    { label: `Support IRC in ${country}`, urlPattern: `https://www.rescue.org/country/${slug}` },
+    { label: `UNHCR ${country} appeal`, urlPattern: `https://www.unhcr.org/countries/${slug}` },
+    { label: `UNICEF ${country}`, urlPattern: `https://www.unicef.org/${slug}` },
+  ];
+
+  for (const ngo of ngos) {
+    actions.push({ label: ngo.label, url: ngo.urlPattern });
+  }
+
+  return actions;
+}
+
+async function verifyActionLinks(actions: GeneratedAction[]): Promise<GeneratedAction[]> {
+  const verified: GeneratedAction[] = [];
+
+  const checks = actions.map(async (action) => {
+    try {
+      const response = await fetch(action.url, { method: "HEAD", redirect: "follow" });
+      if (response.ok) verified.push(action);
+    } catch {
+      // skip broken links
+    }
+  });
+
+  await Promise.allSettled(checks);
+  return verified;
+}
+
 function detectRegion(country: string): string {
   const regions: Record<string, string[]> = {
     "East Africa": ["Sudan", "South Sudan", "Somalia", "Ethiopia", "Eritrea", "Kenya", "Uganda", "Tanzania", "Rwanda", "Burundi", "Djibouti"],
@@ -218,11 +255,14 @@ export async function POST(request: NextRequest) {
 
   const searchQuery = title ? `${title} ${country}` : country;
 
-  const [wikipedia, reliefWeb, unhcr, news] = await Promise.all([
+  const candidateActions = buildActionLinks(country.trim());
+
+  const [wikipedia, reliefWeb, unhcr, news, actions] = await Promise.all([
     searchWikipedia(searchQuery),
     searchReliefWeb(country.trim()),
     searchUNHCR(country.trim()),
     searchGoogleNews(searchQuery),
+    verifyActionLinks(candidateActions),
   ]);
 
   const summaryParts: string[] = [];
@@ -257,6 +297,7 @@ export async function POST(request: NextRequest) {
     summary,
     keyFacts: allFacts,
     sources: allSources,
+    actions,
     region,
   };
 

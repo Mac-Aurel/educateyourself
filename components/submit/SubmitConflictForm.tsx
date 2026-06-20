@@ -145,6 +145,7 @@ export function SubmitConflictForm() {
   const [imageUrl, setImageUrl] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [actions, setActions] = useState<Source[]>([]);
   const [sources, setSources] = useState<Source[]>([{ name: "", url: "" }]);
   const [submitting, setSubmitting] = useState(false);
   const [generating, setGenerating] = useState(false);
@@ -163,6 +164,18 @@ export function SubmitConflictForm() {
 
   function removeSource(index: number) {
     setSources((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function handleActionChange(index: number, field: "name" | "url", value: string) {
+    setActions((prev) => prev.map((a, i) => (i === index ? { ...a, [field]: value } : a)));
+  }
+
+  function addAction() {
+    setActions((prev) => [...prev, { name: "", url: "" }]);
+  }
+
+  function removeAction(index: number) {
+    setActions((prev) => prev.filter((_, i) => i !== index));
   }
 
   function handleFactChange(index: number, value: string) {
@@ -200,6 +213,7 @@ export function SubmitConflictForm() {
       if (data.summary) setSummary(data.summary);
       if (data.keyFacts?.length > 0) setKeyFacts(data.keyFacts);
       if (data.sources?.length > 0) setSources(data.sources);
+      if (data.actions?.length > 0) setActions(data.actions.map((a: { label: string; url: string }) => ({ name: a.label, url: a.url })));
       if (data.region && !region) setRegion(data.region);
     } catch {
       setError("Could not generate content. You can still write your own.");
@@ -250,6 +264,9 @@ export function SubmitConflictForm() {
 
     const validSources = sources.filter((s) => s.name.trim() && s.url.trim());
     const validFacts = keyFacts.filter((f) => f.trim().length > 0);
+    const validActions = actions
+      .filter((a) => a.name.trim() && a.url.trim())
+      .map((a) => ({ label: a.name.trim(), url: a.url.trim() }));
 
     try {
       const response = await fetch("/api/conflicts", {
@@ -262,6 +279,7 @@ export function SubmitConflictForm() {
           summary,
           keyFacts: validFacts,
           sources: validSources,
+          actions: validActions,
           imageUrl: imageUrl || undefined,
         }),
       });
@@ -344,6 +362,47 @@ export function SubmitConflictForm() {
         onRemove={removeSource}
         onChange={handleSourceChange}
       />
+
+      <div>
+        <FieldLabel>How to act (optional)</FieldLabel>
+        <p className="mb-2 text-xs text-neutral-400">
+          Links to donate, sign petitions, or support organizations helping on the ground.
+        </p>
+        <div className="flex flex-col gap-3">
+          {actions.map((action, index) => (
+            <div key={index} className="flex gap-3">
+              <input
+                type="text"
+                placeholder="e.g. Donate to MSF"
+                value={action.name}
+                onChange={(e) => handleActionChange(index, "name", e.target.value)}
+                className="flex-1 border-b border-neutral-200 bg-transparent py-2.5 text-sm outline-none transition-colors focus:border-black placeholder:text-neutral-300"
+              />
+              <input
+                type="url"
+                placeholder="https://..."
+                value={action.url}
+                onChange={(e) => handleActionChange(index, "url", e.target.value)}
+                className="flex-[2] border-b border-neutral-200 bg-transparent py-2.5 text-sm outline-none transition-colors focus:border-black placeholder:text-neutral-300"
+              />
+              <button
+                type="button"
+                onClick={() => removeAction(index)}
+                className="text-neutral-300 transition-colors hover:text-black"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={addAction}
+          className="mt-3 text-xs uppercase tracking-[0.1em] text-neutral-400 transition-opacity hover:opacity-60"
+        >
+          + Add an action link
+        </button>
+      </div>
 
       <div>
         <FieldLabel>Image (optional)</FieldLabel>
