@@ -12,22 +12,23 @@ body {
 .goog-te-banner-frame { display: none !important; }
 body { top: 0 !important; }
 
-#google_translate_element select {
+.goog-te-gadget {
+  font-size: 0 !important;
+}
+
+.goog-te-gadget .goog-te-combo {
+  font-size: 12px !important;
   border: 1px solid #e5e5e5;
   background: white;
-  padding: 4px 8px;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  padding: 6px 10px;
   outline: none;
   cursor: pointer;
 }
 
-.goog-logo-link,
-.goog-te-gadget > span {
+.goog-logo-link {
   display: none !important;
 }
 
-.skiptranslate iframe {
+.goog-te-gadget > span {
   display: none !important;
 }

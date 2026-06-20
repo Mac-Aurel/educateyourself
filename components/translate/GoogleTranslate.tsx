@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 declare global {
   interface Window {
@@ -11,6 +11,7 @@ declare global {
 
 export function GoogleTranslate() {
   const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (document.getElementById("google-translate-script")) return;
@@ -33,19 +34,29 @@ export function GoogleTranslate() {
     document.body.appendChild(script);
   }, []);
 
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
-    <div className="relative">
+    <div ref={containerRef} className="relative">
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="text-xs uppercase tracking-[0.1em] text-neutral-400 transition-opacity hover:text-black"
-        title="Translate"
+        className="text-sm text-neutral-400 transition-colors hover:text-black"
+        title="Translate this page"
       >
         🌐
       </button>
       <div
-        className={`absolute right-0 top-full z-50 mt-1 border border-neutral-200 bg-white p-2 shadow-sm transition-all ${
-          open ? "visible opacity-100" : "invisible opacity-0"
+        className={`absolute right-0 top-full z-50 mt-2 whitespace-nowrap border border-neutral-200 bg-white p-3 shadow-sm ${
+          open ? "block" : "hidden"
         }`}
       >
         <div id="google_translate_element" />
