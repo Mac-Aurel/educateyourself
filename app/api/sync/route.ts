@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAllConflicts } from "@/lib/supabase/queries/conflicts";
 import { syncAllConflicts } from "@/lib/api/syncConflict";
+import { discoverNewConflicts } from "@/lib/api/discoverConflicts";
 import type { Conflict } from "@/types/conflict";
 
 function isAuthorized(request: NextRequest): boolean {
@@ -22,11 +23,16 @@ export async function POST(request: NextRequest) {
   }
 
   const summaries = await getAllConflicts();
-
-  // getAllConflicts returns ConflictSummary — we cast to Conflict since
-  // syncOneConflict only needs the fields present in ConflictSummary
   const results = await syncAllConflicts(summaries as unknown as Conflict[]);
   const counts = countResults(results);
 
-  return NextResponse.json({ ...counts, results }, { status: 200 });
+  const discovered = await discoverNewConflicts();
+
+  return NextResponse.json({
+    sync: { ...counts, results },
+    discovered: {
+      added: discovered.added,
+      errors: discovered.errors,
+    },
+  }, { status: 200 });
 }
