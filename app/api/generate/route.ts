@@ -26,13 +26,17 @@ function stripHtml(html: string): string {
 
 async function searchWikipedia(query: string): Promise<{ summary: string; url: string } | null> {
   try {
-    const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query + " conflict crisis")}&srlimit=3&format=json&origin=*`;
+    const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query + " war conflict crisis humanitarian")}&srlimit=5&format=json&origin=*`;
     const searchResponse = await fetch(searchUrl);
     const searchData = await searchResponse.json();
     const results = searchData.query?.search;
     if (!results || results.length === 0) return null;
 
-    const pageTitle = results[0].title;
+    const conflictKeywords = ["war", "conflict", "crisis", "civil", "insurgency", "genocide", "invasion", "humanitarian"];
+    const bestResult = results.find((r: { title: string }) =>
+      conflictKeywords.some((kw) => r.title.toLowerCase().includes(kw))
+    ) ?? results[0];
+    const pageTitle = bestResult.title;
     const contentUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pageTitle)}&prop=extracts&exintro=false&explaintext=true&exsectionformat=plain&format=json&origin=*`;
     const contentResponse = await fetch(contentUrl);
     const contentData = await contentResponse.json();
@@ -125,6 +129,29 @@ async function searchReliefWeb(country: string): Promise<{
   }
 }
 
+const COUNTRY_ISO3: Record<string, string> = {
+  "sudan": "SDN", "south sudan": "SSD", "somalia": "SOM", "ethiopia": "ETH",
+  "eritrea": "ERI", "kenya": "KEN", "uganda": "UGA", "tanzania": "TZA",
+  "rwanda": "RWA", "burundi": "BDI", "djibouti": "DJI",
+  "nigeria": "NGA", "mali": "MLI", "niger": "NER", "burkina faso": "BFA",
+  "cameroon": "CMR", "chad": "TCD", "guinea": "GIN", "senegal": "SEN",
+  "democratic republic of the congo": "COD", "congo": "COG",
+  "central african republic": "CAF", "mozambique": "MOZ", "zimbabwe": "ZWE",
+  "libya": "LBY", "egypt": "EGY", "tunisia": "TUN", "algeria": "DZA", "morocco": "MAR",
+  "palestine": "PSE", "israel": "ISR", "syria": "SYR", "iraq": "IRQ",
+  "yemen": "YEM", "lebanon": "LBN", "jordan": "JOR", "iran": "IRN",
+  "afghanistan": "AFG", "pakistan": "PAK", "india": "IND", "bangladesh": "BGD",
+  "sri lanka": "LKA", "nepal": "NPL",
+  "myanmar": "MMR", "philippines": "PHL", "thailand": "THA", "indonesia": "IDN",
+  "cambodia": "KHM",
+  "ukraine": "UKR", "russia": "RUS", "georgia": "GEO", "armenia": "ARM",
+  "azerbaijan": "AZE", "moldova": "MDA",
+  "colombia": "COL", "venezuela": "VEN", "mexico": "MEX", "honduras": "HND",
+  "guatemala": "GTM", "el salvador": "SLV", "ecuador": "ECU", "peru": "PER",
+  "haiti": "HTI", "cuba": "CUB",
+  "south africa": "ZAF", "angola": "AGO",
+};
+
 async function searchUNHCR(countryName: string): Promise<{
   displaced: number;
   refugees: number;
@@ -132,13 +159,16 @@ async function searchUNHCR(countryName: string): Promise<{
   facts: string[];
 }> {
   try {
-    const year = new Date().getFullYear();
-    const url = `https://api.unhcr.org/population/v1/population?year=${year}&coo_name=${encodeURIComponent(countryName)}&limit=20`;
-    const response = await fetch(url, { headers: { Accept: "application/json" } });
+    const iso3 = COUNTRY_ISO3[countryName.toLowerCase()];
+    const year = new Date().getFullYear() - 1;
+    const param = iso3 ? `coo=${iso3}` : `coo_name=${encodeURIComponent(countryName)}`;
+    const url = `https://api.unhcr.org/population/v1/population/?year=${year}&${param}&limit=20`;
+    const response = await fetch(url, { headers: { Accept: "application/json" }, redirect: "follow" });
     if (!response.ok) return { displaced: 0, refugees: 0, source: null, facts: [] };
 
     const json = await response.json();
-    const items = json.items ?? [];
+    const allItems = json.items ?? [];
+    const items = allItems.filter((item: { coo_name: string }) => item.coo_name !== "-");
 
     let refugees = 0;
     let idps = 0;
