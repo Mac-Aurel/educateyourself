@@ -79,6 +79,22 @@ create index discussions_parent_id_idx on discussions (parent_id);
 
 
 -- -------------------------------------------------------
+-- Table: discussion_likes
+-- One like per user per message.
+-- -------------------------------------------------------
+
+create table discussion_likes (
+  id            uuid primary key default gen_random_uuid(),
+  discussion_id uuid not null references discussions (id) on delete cascade,
+  user_id       uuid not null references app_users (id) on delete cascade,
+  created_at    timestamptz not null default now(),
+  unique (discussion_id, user_id)
+);
+
+create index discussion_likes_discussion_id_idx on discussion_likes (discussion_id);
+
+
+-- -------------------------------------------------------
 -- Row Level Security
 -- -------------------------------------------------------
 
@@ -114,6 +130,21 @@ create policy "discussions: public read"
 create policy "discussions: public insert"
   on discussions for insert
   with check (true);
+
+-- Likes: anyone can read, authenticated users can toggle
+alter table discussion_likes enable row level security;
+
+create policy "likes: public read"
+  on discussion_likes for select
+  using (true);
+
+create policy "likes: public insert"
+  on discussion_likes for insert
+  with check (true);
+
+create policy "likes: public delete"
+  on discussion_likes for delete
+  using (true);
 
 -- app_users: only the service role manages accounts (our API routes handle this)
 create policy "app_users: service role only"

@@ -76,11 +76,11 @@ export function CommentForm({ conflictId, parentId = null, prefilledName, onMess
         onChange={(e) => setContent(e.target.value)}
         className="resize-none border-b border-neutral-200 bg-transparent py-2.5 text-sm outline-none transition-colors focus:border-black placeholder:text-neutral-300"
       />
-      {error && <p className="text-[11px] text-red-500">{error}</p>}
+      {error && <p className="text-xs text-red-500">{error}</p>}
       <button
         type="submit"
         disabled={submitting || !isFormValid(authorName, content)}
-        className="self-end bg-black px-6 py-2.5 text-[10px] uppercase tracking-[0.2em] text-white transition-opacity hover:opacity-80 disabled:opacity-30"
+        className="self-end bg-black px-6 py-2.5 text-xs uppercase tracking-[0.15em] text-white transition-opacity hover:opacity-80 disabled:opacity-30"
       >
         {submitting ? "Posting..." : "Post"}
       </button>

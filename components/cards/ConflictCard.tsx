@@ -11,7 +11,7 @@ function CardImage({ imageUrl, title }: { imageUrl: string | null; title: string
   if (!imageUrl) {
     return (
       <div className="flex aspect-[4/3] w-full items-center justify-center bg-neutral-100">
-        <span className="text-[10px] uppercase tracking-[0.2em] text-neutral-300">No image</span>
+        <span className="text-xs uppercase tracking-[0.15em] text-neutral-300">No image</span>
       </div>
     );
   }
@@ -36,17 +36,17 @@ export function ConflictCard({ conflict }: ConflictCardProps) {
     >
       <CardImage imageUrl={conflict.imageUrl} title={conflict.title} />
       <div className="mt-4 flex flex-col gap-1">
-        <h2 className="text-xs uppercase tracking-[0.15em]">
+        <h2 className="text-sm font-medium uppercase tracking-[0.1em] sm:text-xs sm:tracking-[0.15em]">
           {conflict.title}
         </h2>
-        <p className="text-[10px] uppercase tracking-[0.1em] text-neutral-400">
+        <p className="text-xs uppercase tracking-[0.08em] text-neutral-500 sm:text-[11px] sm:tracking-[0.1em]">
           {conflict.country} · {conflict.region}
           {conflict.startedAt ? ` · Since ${conflict.startedAt}` : ""}
         </p>
-        <p className="mt-2 line-clamp-2 text-[11px] leading-relaxed text-neutral-500">
+        <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-neutral-500 sm:text-xs">
           {conflict.summary}
         </p>
-        <div className="mt-3 flex gap-6 text-[10px] uppercase tracking-[0.1em] text-neutral-400">
+        <div className="mt-3 flex gap-6 text-xs uppercase tracking-[0.08em] text-neutral-400 sm:text-[11px] sm:tracking-[0.1em]">
           <span>{formatNumber(conflict.fatalities)} killed</span>
           <span>{formatNumber(conflict.displaced)} displaced</span>
         </div>

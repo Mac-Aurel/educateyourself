@@ -8,7 +8,7 @@ export type DiscussionRow = {
   created_at: string;
 };
 
-// App-facing type (camelCase) — produced by mapDiscussionRow()
+// App-facing type (camelCase)
 export type DiscussionMessage = {
   id: string;
   conflictId: string;
@@ -16,6 +16,7 @@ export type DiscussionMessage = {
   authorName: string;
   content: string;
   createdAt: string;
+  likes: number;
 };
 
 export type DiscussionThread = {

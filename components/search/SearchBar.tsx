@@ -68,11 +68,11 @@ export function SearchBar({ conflicts }: SearchBarProps) {
         onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
         onFocus={() => setOpen(true)}
         placeholder="SEARCH"
-        className="w-full border-b border-black bg-transparent py-3 text-xs uppercase tracking-[0.2em] outline-none placeholder:text-neutral-400"
+        className="w-full border-b border-black bg-transparent py-3 text-sm uppercase tracking-[0.15em] outline-none placeholder:text-neutral-400 sm:text-xs sm:tracking-[0.2em]"
       />
 
       {showDropdown && (
-        <div className="absolute left-0 right-0 top-full z-50 border border-t-0 border-neutral-200 bg-white">
+        <div className="absolute left-0 right-0 top-full z-50 border border-t-0 border-neutral-200 bg-white shadow-sm">
           {results.length > 0 ? (
             <ul>
               {results.map((conflict) => (
@@ -83,12 +83,12 @@ export function SearchBar({ conflicts }: SearchBarProps) {
                     className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-neutral-50"
                   >
                     <div>
-                      <span className="text-xs uppercase tracking-[0.15em]">{conflict.title}</span>
-                      <span className="ml-3 text-[10px] uppercase tracking-[0.1em] text-neutral-400">
+                      <span className="text-sm font-medium uppercase tracking-[0.1em] sm:text-xs">{conflict.title}</span>
+                      <span className="ml-3 text-xs text-neutral-400 sm:text-[11px]">
                         {conflict.country}
                       </span>
                     </div>
-                    <span className="text-[10px] uppercase tracking-[0.1em] text-neutral-400">
+                    <span className="text-xs uppercase tracking-[0.08em] text-neutral-400">
                       {conflict.status}
                     </span>
                   </button>
@@ -96,14 +96,14 @@ export function SearchBar({ conflicts }: SearchBarProps) {
               ))}
             </ul>
           ) : (
-            <div className="px-4 py-5 text-center">
-              <p className="text-xs uppercase tracking-[0.15em] text-neutral-400">
+            <div className="px-4 py-6 text-center">
+              <p className="text-sm text-neutral-400 sm:text-xs">
                 No results found
               </p>
               <button
                 type="button"
                 onClick={handleCreateNew}
-                className="mt-3 text-xs uppercase tracking-[0.2em] underline underline-offset-4 transition-opacity hover:opacity-60"
+                className="mt-3 text-sm uppercase tracking-[0.1em] underline underline-offset-4 transition-opacity hover:opacity-60 sm:text-xs sm:tracking-[0.15em]"
               >
                 Submit &quot;{query}&quot; as a new conflict
               </button>

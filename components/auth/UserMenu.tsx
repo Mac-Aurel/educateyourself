@@ -25,7 +25,7 @@ export function UserMenu({ username, onLogout }: UserMenuProps) {
       <button
         onClick={handleLogout}
         disabled={loading}
-        className="text-[10px] uppercase tracking-[0.15em] text-neutral-400 underline underline-offset-4 transition-opacity hover:opacity-60 disabled:opacity-30"
+        className="text-xs uppercase tracking-[0.1em] text-neutral-400 underline underline-offset-4 transition-opacity hover:opacity-60 disabled:opacity-30"
       >
         Sign out
       </button>

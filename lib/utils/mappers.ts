@@ -51,5 +51,6 @@ export function mapDiscussionRow(row: DiscussionRow): DiscussionMessage {
     authorName: row.author_name,
     content: row.content,
     createdAt: row.created_at,
+    likes: 0,
   };
 }

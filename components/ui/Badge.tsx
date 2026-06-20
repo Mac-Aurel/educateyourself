@@ -12,7 +12,7 @@ type BadgeProps = {
 
 export function Badge({ status }: BadgeProps) {
   return (
-    <span className="text-[10px] uppercase tracking-[0.2em] text-neutral-400">
+    <span className="text-xs uppercase tracking-[0.15em] text-neutral-400">
       {STATUS_LABELS[status]}
     </span>
   );

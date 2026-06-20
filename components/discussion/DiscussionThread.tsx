@@ -78,7 +78,7 @@ export function DiscussionThread({ conflictId, initialMessages }: DiscussionThre
 
   return (
     <section>
-      <h2 className="text-[10px] uppercase tracking-[0.3em] text-neutral-400">
+      <h2 className="text-xs uppercase tracking-[0.2em] text-neutral-400">
         Discussion ({messages.length})
       </h2>
 
@@ -88,9 +88,9 @@ export function DiscussionThread({ conflictId, initialMessages }: DiscussionThre
         ) : (
           threads.map(({ parent, replies }) => (
             <div key={parent.id} className="flex flex-col gap-3">
-              <DiscussionBubble message={parent} isReply={false} />
+              <DiscussionBubble message={parent} isReply={false} isLoggedIn={!!user} />
               {replies.map((reply) => (
-                <DiscussionBubble key={reply.id} message={reply} isReply={true} />
+                <DiscussionBubble key={reply.id} message={reply} isReply={true} isLoggedIn={!!user} />
               ))}
             </div>
           ))

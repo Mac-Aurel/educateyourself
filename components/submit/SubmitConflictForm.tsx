@@ -7,7 +7,7 @@ type Source = { name: string; url: string };
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
-    <label className="mb-2 block text-[10px] uppercase tracking-[0.2em] text-neutral-400">
+    <label className="mb-2 block text-xs uppercase tracking-[0.15em] text-neutral-400">
       {children}
     </label>
   );
@@ -81,7 +81,7 @@ function SourceFields({
       <button
         type="button"
         onClick={onAdd}
-        className="mt-3 text-[10px] uppercase tracking-[0.15em] text-neutral-400 transition-opacity hover:opacity-60"
+        className="mt-3 text-xs uppercase tracking-[0.1em] text-neutral-400 transition-opacity hover:opacity-60"
       >
         + Add another source
       </button>
@@ -126,7 +126,7 @@ function KeyFactsFields({
       <button
         type="button"
         onClick={onAdd}
-        className="mt-3 text-[10px] uppercase tracking-[0.15em] text-neutral-400 transition-opacity hover:opacity-60"
+        className="mt-3 text-xs uppercase tracking-[0.1em] text-neutral-400 transition-opacity hover:opacity-60"
       >
         + Add a fact
       </button>
@@ -288,7 +288,7 @@ export function SubmitConflictForm() {
         <TextInput value={title} onChange={setTitle} placeholder="e.g. Conflict in South Kivu" />
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         <div>
           <FieldLabel>Country *</FieldLabel>
           <TextInput value={country} onChange={setCountry} placeholder="e.g. Sudan" />
@@ -300,7 +300,7 @@ export function SubmitConflictForm() {
       </div>
 
       <div className="border border-neutral-200 p-6">
-        <p className="mb-4 text-[11px] leading-relaxed text-neutral-500">
+        <p className="mb-4 text-xs leading-relaxed text-neutral-500">
           Enter a country and title above, then click the button to search Wikipedia, ReliefWeb,
           UNHCR, and Google News for relevant information. You can edit everything after.
         </p>
@@ -308,18 +308,18 @@ export function SubmitConflictForm() {
           type="button"
           onClick={handleGenerate}
           disabled={generating}
-          className="border border-black px-5 py-2.5 text-[10px] uppercase tracking-[0.2em] transition-colors hover:bg-black hover:text-white disabled:opacity-30"
+          className="border border-black px-5 py-2.5 text-xs uppercase tracking-[0.15em] transition-colors hover:bg-black hover:text-white disabled:opacity-30"
         >
           {generating ? "Searching..." : "Search and auto-fill"}
         </button>
         {generateMessage && (
-          <p className="mt-3 text-[10px] text-neutral-400">{generateMessage}</p>
+          <p className="mt-3 text-xs text-neutral-400">{generateMessage}</p>
         )}
       </div>
 
       <div>
         <FieldLabel>Summary *</FieldLabel>
-        <p className="mb-2 text-[10px] text-neutral-400">
+        <p className="mb-2 text-xs text-neutral-400">
           Describe what is happening, who is affected, and why it matters. Minimum 50 characters.
         </p>
         <textarea
@@ -357,20 +357,20 @@ export function SubmitConflictForm() {
             <button
               type="button"
               onClick={removeImage}
-              className="absolute top-2 right-2 bg-black px-3 py-1.5 text-[10px] uppercase tracking-[0.15em] text-white transition-opacity hover:opacity-80"
+              className="absolute top-2 right-2 bg-black px-3 py-1.5 text-xs uppercase tracking-[0.1em] text-white transition-opacity hover:opacity-80"
             >
               Remove
             </button>
             {uploading && (
               <div className="absolute inset-0 flex items-center justify-center bg-white/70">
-                <span className="text-[10px] uppercase tracking-[0.2em]">Uploading...</span>
+                <span className="text-xs uppercase tracking-[0.15em]">Uploading...</span>
               </div>
             )}
           </div>
         ) : (
           <div className="mt-2 flex flex-col gap-4">
             <label className="flex cursor-pointer flex-col items-center border border-dashed border-neutral-300 py-8 transition-colors hover:border-black">
-              <span className="text-[10px] uppercase tracking-[0.2em] text-neutral-400">
+              <span className="text-xs uppercase tracking-[0.15em] text-neutral-400">
                 Choose an image from your device
               </span>
               <span className="mt-1 text-[10px] text-neutral-300">JPEG, PNG or WebP, max 5MB</span>
@@ -383,7 +383,7 @@ export function SubmitConflictForm() {
             </label>
             <div className="flex items-center gap-3">
               <div className="h-px flex-1 bg-neutral-200" />
-              <span className="text-[10px] uppercase tracking-[0.15em] text-neutral-300">or</span>
+              <span className="text-xs uppercase tracking-[0.1em] text-neutral-300">or</span>
               <div className="h-px flex-1 bg-neutral-200" />
             </div>
             <TextInput value={imageUrl} onChange={setImageUrl} placeholder="Paste an image URL" type="url" />
@@ -392,13 +392,13 @@ export function SubmitConflictForm() {
       </div>
 
       {error && (
-        <p className="text-[11px] text-red-500">{error}</p>
+        <p className="text-xs text-red-500">{error}</p>
       )}
 
       <button
         type="submit"
         disabled={submitting}
-        className="self-end bg-black px-8 py-3 text-[10px] uppercase tracking-[0.2em] text-white transition-opacity hover:opacity-80 disabled:opacity-30"
+        className="self-end bg-black px-8 py-3 text-xs uppercase tracking-[0.15em] text-white transition-opacity hover:opacity-80 disabled:opacity-30"
       >
         {submitting ? "Submitting..." : "Submit"}
       </button>

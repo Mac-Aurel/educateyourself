@@ -5,13 +5,13 @@ import { SearchBar } from "@/components/search/SearchBar";
 
 function Navbar() {
   return (
-    <nav className="flex items-center justify-between border-b border-neutral-200 px-6 py-5 sm:px-10">
-      <Link href="/" className="text-xs uppercase tracking-[0.3em]">
+    <nav className="flex items-center justify-between border-b border-neutral-200 px-5 py-4 sm:px-10 sm:py-5">
+      <Link href="/" className="text-xs font-medium uppercase tracking-[0.25em]">
         Raise ur voice
       </Link>
       <Link
         href="/submit"
-        className="text-xs uppercase tracking-[0.2em] underline underline-offset-4 transition-opacity hover:opacity-60"
+        className="text-xs uppercase tracking-[0.15em] underline underline-offset-4 transition-opacity hover:opacity-60"
       >
         Submit
       </Link>
@@ -21,11 +21,11 @@ function Navbar() {
 
 function Hero() {
   return (
-    <div className="flex flex-col items-center px-6 pt-20 pb-16 text-center sm:pt-28 sm:pb-20">
-      <h1 className="text-[clamp(2rem,5vw,3.5rem)] font-light uppercase tracking-[0.3em] leading-tight">
+    <div className="flex flex-col items-center px-6 pt-14 pb-12 text-center sm:pt-24 sm:pb-16">
+      <h1 className="text-3xl font-light uppercase tracking-[0.2em] leading-tight sm:text-5xl sm:tracking-[0.3em]">
         Raise ur voice
       </h1>
-      <p className="mt-4 max-w-md text-xs uppercase tracking-[0.2em] text-neutral-500 leading-relaxed">
+      <p className="mt-4 max-w-md text-sm uppercase tracking-[0.15em] text-neutral-500 leading-relaxed sm:text-xs sm:tracking-[0.2em]">
         Global conflicts and human rights crises. Read. Discuss. Act.
       </p>
     </div>
@@ -34,7 +34,7 @@ function Hero() {
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="mb-10 text-center text-[10px] uppercase tracking-[0.35em] text-neutral-400">
+    <h2 className="mb-8 text-center text-xs uppercase tracking-[0.25em] text-neutral-400 sm:mb-10">
       {children}
     </h2>
   );
@@ -48,15 +48,15 @@ export default async function HomePage() {
       <Navbar />
       <main>
         <Hero />
-        <div className="mx-auto max-w-xl px-6 pb-16">
+        <div className="mx-auto max-w-xl px-5 pb-12 sm:px-6 sm:pb-16">
           <SearchBar conflicts={conflicts} />
         </div>
-        <section className="mx-auto max-w-7xl px-6 pb-24 sm:px-10">
+        <section className="mx-auto max-w-7xl px-5 pb-20 sm:px-10 sm:pb-24">
           <SectionTitle>Active crises</SectionTitle>
           <ConflictGrid conflicts={conflicts} />
         </section>
       </main>
-      <footer className="border-t border-neutral-200 py-10 text-center text-[10px] uppercase tracking-[0.3em] text-neutral-400">
+      <footer className="border-t border-neutral-200 py-8 text-center text-xs uppercase tracking-[0.2em] text-neutral-400 sm:py-10">
         Raise ur voice
       </footer>
     </>

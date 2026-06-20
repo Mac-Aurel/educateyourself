@@ -1,7 +1,5 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
-import { mapDiscussionRow } from "@/lib/utils/mappers";
-import type { DiscussionRow, DiscussionMessage, NewMessage } from "@/types/discussion";
+import type { DiscussionMessage } from "@/types/discussion";
 
 export async function getDiscussionsByConflict(
   conflictId: string
@@ -10,28 +8,19 @@ export async function getDiscussionsByConflict(
 
   const { data, error } = await supabase
     .from("discussions")
-    .select("*")
+    .select("*, discussion_likes(count)")
     .eq("conflict_id", conflictId)
     .order("created_at", { ascending: true });
 
   if (error) throw new Error(`Failed to fetch discussions: ${error.message}`);
-  return (data as DiscussionRow[]).map(mapDiscussionRow);
-}
 
-export async function postMessage(message: NewMessage): Promise<DiscussionMessage> {
-  const supabase = createSupabaseBrowserClient();
-
-  const { data, error } = await supabase
-    .from("discussions")
-    .insert({
-      conflict_id: message.conflictId,
-      parent_id: message.parentId,
-      author_name: message.authorName.trim(),
-      content: message.content.trim(),
-    })
-    .select()
-    .single();
-
-  if (error) throw new Error(`Failed to post message: ${error.message}`);
-  return mapDiscussionRow(data as DiscussionRow);
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    conflictId: row.conflict_id,
+    parentId: row.parent_id,
+    authorName: row.author_name,
+    content: row.content,
+    createdAt: row.created_at,
+    likes: row.discussion_likes?.[0]?.count ?? 0,
+  }));
 }
