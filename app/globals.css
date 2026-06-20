@@ -10,7 +10,12 @@ body {
 }
 
 .goog-te-banner-frame { display: none !important; }
-body { top: 0 !important; }
+.skiptranslate { display: none !important; }
+body { top: 0 !important; position: static !important; }
+
+#google_translate_element .skiptranslate {
+  display: block !important;
+}
 
 .goog-te-gadget {
   font-size: 0 !important;
