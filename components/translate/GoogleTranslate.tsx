@@ -32,6 +32,22 @@ export function GoogleTranslate() {
     script.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
     script.async = true;
     document.body.appendChild(script);
+
+    const observer = new MutationObserver(() => {
+      const frame = document.querySelector(".goog-te-banner-frame") as HTMLElement | null;
+      if (frame) frame.style.display = "none";
+
+      document.body.style.top = "0px";
+      document.body.style.position = "static";
+
+      document.querySelectorAll("iframe.skiptranslate").forEach((el) => {
+        (el as HTMLElement).style.display = "none";
+      });
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
